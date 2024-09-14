@@ -4,25 +4,39 @@ import java.util.Scanner;
 public class Battleship {
 
     public static void main(String[] args) {
-        int[][] player1ShipPosition = new int[5][];
-        int[][] player2ShipPosition = new int[5][];
+        int[][] playerOneShipPosition = new int[5][];
+        int[][] playerTwoShipPosition = new int[5][];
 
         System.out.println("Welcome to Battleship");
         System.out.println("PLAYER 1, ENTER YOUR SHIPS' COORDINATES.");
 
         for (int i = 0; i < 5; i++) {
-            player1ShipPosition[i] = inputShipPosition(i + 1);
+            int[] userInputPosition = inputShipPosition(i + 1);
+            if (userInputPosition[0] > -1 && userInputPosition[0] < 5 && userInputPosition[1] > -1
+                    && userInputPosition[1] < 5) {
+                playerOneShipPosition[i] = userInputPosition;
+            } else {
+                i--;
+                System.out.println("Invalid coordinates. Choose different coordinates.");
+            }
         }
 
-        System.out.println(Arrays.deepToString(player1ShipPosition));
+        // System.out.println(Arrays.deepToString(playerOneShipPosition));
 
         System.out.println("PLAYER 2, ENTER YOUR SHIPS' COORDINATES.");
 
         for (int i = 0; i < 5; i++) {
-            player2ShipPosition[i] = inputShipPosition(i + 1);
+            int[] userInputPosition = inputShipPosition(i + 1);
+            if (userInputPosition[0] > -1 && userInputPosition[0] < 5 && userInputPosition[1] > -1
+                    && userInputPosition[1] < 5) {
+                playerTwoShipPosition[i] = userInputPosition;
+            } else {
+                i--;
+                System.out.println("Invalid coordinates. Choose different coordinates.");
+            }
         }
 
-        System.out.println(Arrays.deepToString(player2ShipPosition));
+        // System.out.println(Arrays.deepToString(playerTwoShipPosition));
     }
 
     private static int[] inputShipPosition(int count) {
@@ -31,30 +45,24 @@ public class Battleship {
 
         Scanner input = new Scanner(System.in);
         int[] shipPosition = new int[2];
-
-        if (input.hasNextInt()) {
-            int x = input.nextInt();
-            if (x > 0 && x < 6) {
-                shipPosition[0] = x;
-            } else {
-                System.out.println("Invalid coordinates. Choose different coordinates.");
-                inputShipPosition(count);
-            }
+        while (true) {
             if (input.hasNextInt()) {
-                int y = input.nextInt();
-                if (y > 0 && y < 6) {
+                int x = input.nextInt();
+                if (input.hasNextInt()) {
+                    int y = input.nextInt();
+                    shipPosition[0] = x;
                     shipPosition[1] = y;
+                    break;
                 } else {
                     System.out.println("Invalid coordinates. Choose different coordinates.");
-                    inputShipPosition(count);
+                    System.out.println(message);
+                    input.next();
                 }
             } else {
                 System.out.println("Invalid coordinates. Choose different coordinates.");
-                inputShipPosition(count);
+                System.out.println(message);
+                input.next();
             }
-        } else {
-            System.out.println("Invalid coordinates. Choose different coordinates.");
-            inputShipPosition(count);
         }
 
         return shipPosition;
