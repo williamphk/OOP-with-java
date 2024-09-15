@@ -32,7 +32,7 @@ public class Battleship {
                 { '-', '-', '-', '-', '-' }
         };
 
-        System.out.println("Welcome to Battleship\n");
+        System.out.println("Welcome to Battleship!\n");
         System.out.println("PLAYER 1, ENTER YOUR SHIPS' COORDINATES.");
 
         for (int i = 0; i < 5; i++) {
@@ -40,7 +40,7 @@ public class Battleship {
             int x = userInputPosition[0];
             int y = userInputPosition[1];
             if (x > -1 && x < 5 && y > -1 && y < 5) {
-                if (isShipPlaced(playerTwoLocationBoard, userInputPosition) == false) {
+                if (isShipPlaced(playerOneLocationBoard, userInputPosition) == false) {
                     playerOneLocationBoard[x][y] = '@';
                 } else {
                     i--;
@@ -55,7 +55,7 @@ public class Battleship {
         printBattleShip(playerOneLocationBoard);
 
         for (int i = 0; i < 100; i++) {
-            System.out.println("\n");
+            System.out.println("");
         }
 
         System.out.println("PLAYER 2, ENTER YOUR SHIPS' COORDINATES.");
@@ -79,7 +79,11 @@ public class Battleship {
 
         printBattleShip(playerTwoLocationBoard);
 
-        while (true) {
+        for (int i = 0; i < 100; i++) {
+            System.out.println("");
+        }
+
+        do {
             Scanner input = new Scanner(System.in);
 
             if (!isWin(playerOneLocationBoard)) {
@@ -94,11 +98,14 @@ public class Battleship {
                                 playerOneTargetHistoryBoard[x][y] = 'X';
                                 System.out.println("PLAYER 1 HIT PLAYER 2's SHIP!");
                                 printBattleShip(playerOneTargetHistoryBoard);
+                                if (!isWin(playerTwoLocationBoard))
+                                    System.out.println("");
                             } else {
                                 playerTwoLocationBoard[x][y] = 'O';
                                 playerOneTargetHistoryBoard[x][y] = 'O';
                                 System.out.println("PLAYER 1 MISSED!");
                                 printBattleShip(playerOneTargetHistoryBoard);
+                                System.out.println("");
                             }
                             break;
                         } else {
@@ -111,41 +118,52 @@ public class Battleship {
                     }
                 }
             } else {
-                System.out.println("PLAYER 2 WINS! YOU SUNK ALL OF YOUR OPPONENT'S SHIPS!");
+                System.out.println("PLAYER 2 WINS! YOU SUNK ALL OF YOUR OPPONENT'S SHIPS!\n");
                 break;
             }
 
             if (!isWin(playerTwoLocationBoard)) {
                 while (true) {
-                    int[] playerTwoInputPosition = inputHitPosition(2, input);
-                    if (!isHitAlready(playerOneLocationBoard, playerTwoInputPosition)) {
-                        int playerTwoX = playerTwoInputPosition[0];
-                        int playerTwoY = playerTwoInputPosition[1];
-                        if (isHit(playerOneLocationBoard, playerTwoInputPosition)) {
-                            playerOneLocationBoard[playerTwoX][playerTwoY] = 'X';
-                            playerTwoTargetHistoryBoard[playerTwoX][playerTwoY] = 'X';
-                            System.out.println("PLAYER 2 HIT PLAYER 1's SHIP!");
-                            printBattleShip(playerTwoTargetHistoryBoard);
+                    int[] userInputPosition = inputHitPosition(2, input);
+                    int x = userInputPosition[0];
+                    int y = userInputPosition[1];
+                    if (x > -1 && x < 5 && y > -1 && y < 5) {
+
+                        if (!isHitAlready(playerOneLocationBoard, userInputPosition)) {
+                            if (isHit(playerOneLocationBoard, userInputPosition)) {
+                                playerOneLocationBoard[x][y] = 'X';
+                                playerTwoTargetHistoryBoard[x][y] = 'X';
+                                System.out.println("PLAYER 2 HIT PLAYER 1's SHIP!");
+                                printBattleShip(playerTwoTargetHistoryBoard);
+                                if (!isWin(playerOneLocationBoard))
+                                    System.out.println("");
+                            } else {
+                                playerOneLocationBoard[x][y] = 'O';
+                                playerTwoTargetHistoryBoard[x][y] = 'O';
+                                System.out.println("PLAYER 2 MISSED!");
+                                printBattleShip(playerTwoTargetHistoryBoard);
+                                System.out.println("");
+                            }
+                            break;
                         } else {
-                            playerOneLocationBoard[playerTwoX][playerTwoY] = 'O';
-                            playerTwoTargetHistoryBoard[playerTwoX][playerTwoY] = 'O';
-                            System.out.println("PLAYER 2 MISSED!");
-                            printBattleShip(playerTwoTargetHistoryBoard);
+                            System.out.println("You already fired on this spot. Choose different coordinates.");
+                            input.nextLine();
                         }
-                        break;
                     } else {
-                        System.out.println("You already fired on this spot. Choose different coordinates.");
+                        System.out.println("Invalid coordinates. Choose different coordinates.");
                         input.nextLine();
                     }
                 }
             } else {
-                System.out.println("PLAYER 1 WINS! YOU SUNK ALL OF YOUR OPPONENT'S SHIPS!");
+                System.out.println("PLAYER 1 WINS! YOU SUNK ALL OF YOUR OPPONENT'S SHIPS!\n");
                 break;
             }
-        }
+        } while (true);
 
-        System.out.println("Final boards:");
+        System.out.println("Final boards:\n");
         printBattleShip(playerOneLocationBoard);
+        System.out.println("");
+
         printBattleShip(playerTwoLocationBoard);
     }
 
