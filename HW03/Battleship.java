@@ -17,16 +17,32 @@ public class Battleship {
                 { -1, -1 },
                 { -1, -1 }
         };
+        char[][] playerOneLocationBoard = {
+                { '-', '-', '-', '-', '-' },
+                { '-', '-', '-', '-', '-' },
+                { '-', '-', '-', '-', '-' },
+                { '-', '-', '-', '-', '-' },
+                { '-', '-', '-', '-', '-' }
+        };
+        char[][] playerTwoLocationBoard = {
+                { '-', '-', '-', '-', '-' },
+                { '-', '-', '-', '-', '-' },
+                { '-', '-', '-', '-', '-' },
+                { '-', '-', '-', '-', '-' },
+                { '-', '-', '-', '-', '-' }
+        };
 
-        System.out.println("Welcome to Battleship");
+        System.out.println("Welcome to Battleship\n");
         System.out.println("PLAYER 1, ENTER YOUR SHIPS' COORDINATES.");
 
         for (int i = 0; i < 5; i++) {
             int[] userInputPosition = inputShipPosition(i + 1);
-            if (userInputPosition[0] > -1 && userInputPosition[0] < 5 && userInputPosition[1] > -1
-                    && userInputPosition[1] < 5) {
+            int x = userInputPosition[0];
+            int y = userInputPosition[1];
+            if (x > -1 && x < 5 && y > -1 && y < 5) {
                 if (isShipPlaced(playerOneShipMap, userInputPosition) == false) {
                     playerOneShipMap[i] = userInputPosition;
+                    playerOneLocationBoard[x][y] = '@';
                 } else {
                     i--;
                     System.out.println("You already have a ship there. Choose different coordinates.");
@@ -37,16 +53,22 @@ public class Battleship {
             }
         }
 
-        // System.out.println(Arrays.deepToString(playerOneShipMap));
+        printBattleShip(playerOneLocationBoard);
+
+        for (int i = 0; i < 100; i++) {
+            System.out.println("\n");
+        }
 
         System.out.println("PLAYER 2, ENTER YOUR SHIPS' COORDINATES.");
 
         for (int i = 0; i < 5; i++) {
             int[] userInputPosition = inputShipPosition(i + 1);
-            if (userInputPosition[0] > -1 && userInputPosition[0] < 5 && userInputPosition[1] > -1
-                    && userInputPosition[1] < 5) {
+            int x = userInputPosition[0];
+            int y = userInputPosition[1];
+            if (x > -1 && x < 5 && y > -1 && y < 5) {
                 if (isShipPlaced(playerTwoShipMap, userInputPosition) == false) {
                     playerTwoShipMap[i] = userInputPosition;
+                    playerTwoLocationBoard[x][y] = '@';
                 } else {
                     i--;
                     System.out.println("You already have a ship there. Choose different coordinates.");
@@ -57,7 +79,8 @@ public class Battleship {
             }
         }
 
-        // System.out.println(Arrays.deepToString(playerTwoShipMap));
+        printBattleShip(playerTwoLocationBoard);
+
     }
 
     private static int[] inputShipPosition(int count) {
