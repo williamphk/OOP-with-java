@@ -4,6 +4,6 @@ public class InvalidPetException extends RuntimeException {
     }
 
     public InvalidPetException() {
-        this("Your pet is invalid");
+        super("Your pet is invalid!");
     }
 }

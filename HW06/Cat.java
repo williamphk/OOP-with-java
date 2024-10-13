@@ -3,11 +3,7 @@ public class Cat extends Pet {
 
     public Cat(String name, double health, int painLevel, int miceCaught) {
         super(name, health, painLevel);
-        if (miceCaught < 0) {
-            this.miceCaught = 0;
-        } else {
-            this.miceCaught = miceCaught;
-        }
+        this.miceCaught = miceCaught < 0 ? 0 : miceCaught;
     }
 
     public Cat(String name, double health, int painLevel) {
@@ -37,18 +33,12 @@ public class Cat extends Pet {
 
     public void speak() {
         super.speak();
+        String sound = (this.getPainLevel() > 5) ? "MEOW " : "meow ";
+        String output = "";
         for (int i = 0; i < this.getMiceCaught(); i++) {
-            if (this.getPainLevel() > 5) {
-                System.out.print("meow".toUpperCase());
-            } else {
-                System.out.print("meow");
-            }
-            if (i != this.getMiceCaught() - 1) {
-                System.out.print(" ");
-            } else {
-                System.out.println("");
-            }
+            output += sound;
         }
+        System.out.println(output.trim());
     }
 
     public boolean equals(Object o) {

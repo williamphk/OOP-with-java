@@ -3,7 +3,7 @@ public class Dog extends Pet {
 
     public Dog(String name, double health, int painLevel, double droolRate) {
         super(name, health, painLevel);
-        this.droolRate = droolRate;
+        this.droolRate = droolRate <= 0 ? 0.5 : droolRate;
     }
 
     public Dog(String name, double health, int painLevel) {
@@ -25,25 +25,20 @@ public class Dog extends Pet {
         } else if (droolRate >= 3.5 && droolRate <= 7.5) {
             time = (int) (this.getPainLevel() / this.getHealth());
         } else if (droolRate > 7.5) {
-            time = (int) (this.getPainLevel() / (int) (this.getHealth() * 2));
+            time = (int) (this.getPainLevel() / (this.getHealth() * 2));
         }
         super.heal();
         return time;
     }
 
     public void speak() {
+        super.speak();
+        String sound = (this.getPainLevel() > 5) ? "BARK " : "bark ";
+        String output = "";
         for (int i = 0; i < this.getPainLevel(); i++) {
-            if (this.getPainLevel() > 5) {
-                System.out.print("bark".toUpperCase());
-            } else {
-                System.out.print("bark");
-            }
-            if (i != this.getPainLevel() - 1) {
-                System.out.print(" ");
-            } else {
-                System.out.println("");
-            }
+            output += sound;
         }
+        System.out.println(output.trim());
     }
 
     public boolean equals(Object o) {

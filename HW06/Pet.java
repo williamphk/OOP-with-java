@@ -60,7 +60,7 @@ public abstract class Pet {
     public boolean equals(Object o) {
         if (o instanceof Pet) {
             Pet pet = (Pet) o;
-            return this.name == pet.getName();
+            return this.name.equals(pet.name);
         }
         return false;
     }

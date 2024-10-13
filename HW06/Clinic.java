@@ -1,7 +1,5 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -20,9 +18,11 @@ public class Clinic {
     }
 
     public String nextDay(File f) throws FileNotFoundException {
+        this.day++;
+
         Scanner fileScan = null;
+        Scanner input = new Scanner(System.in);
         Scanner appointmentScan = null;
-        String message = "";
         String output = "";
 
         try {
@@ -35,26 +35,20 @@ public class Clinic {
 
                 String name = appointmentScan.next();
                 String type = appointmentScan.next();
-                double droolRate = 0.0;
-                int miceCaught = 0;
+                String stat = appointmentScan.next();
+                String time = appointmentScan.next();
 
-                if (type.equals("Dog")) {
-                    droolRate = appointmentScan.nextDouble();
-                } else if (type.equals("Cat")) {
-                    miceCaught = appointmentScan.nextInt();
-                } else {
+                if (!type.equals("Dog") && !type.equals("Cat")) {
                     throw new InvalidPetException();
                 }
 
-                String time = appointmentScan.next();
+                System.out.printf("Consultation for %s the %s at %s.\n", name, type, time);
 
-                Scanner input = new Scanner(System.in);
                 boolean isHeath = false;
                 double health = 0.0;
                 while (!isHeath) {
                     try {
-                        System.out.println("Consultation for " + name + " the " + type + " at " + time + ".\n" +
-                                "What is the health of " + name + "?");
+                        System.out.printf("What is the health of %s?\n", name);
                         health = input.nextDouble();
                         isHeath = true;
                     } catch (InputMismatchException e) {
@@ -69,7 +63,7 @@ public class Clinic {
                 int painLevel = 0;
                 while (!ispainLevel) {
                     try {
-                        System.out.println("On a scale of 1 to 10, how much pain is " + name + " in right now?");
+                        System.out.printf("On a scale of 1 to 10, how much pain is %s in right now?\n", name);
                         painLevel = input.nextInt();
                         ispainLevel = true;
                     } catch (InputMismatchException e) {
@@ -80,31 +74,25 @@ public class Clinic {
                     }
                 }
 
-                // if (input != null) {
-                // input.close();
-                // }
-
-                if (type.equals("Dog")) {
-                    Dog dog = new Dog(name, health, painLevel, droolRate);
-                    double initialHealth = dog.getHealth();
-                    int initialPainLevel = dog.getPainLevel();
-                    dog.speak();
-                    String exitTime = addTime(time, dog.treat());
-                    message = name + "," + type + "," + droolRate + "," + day + "," + time + "," + exitTime + ","
-                            + initialHealth + ","
-                            + initialPainLevel + "\n";
-                    output += message;
-                } else if (type.equals("Cat")) {
-                    Cat cat = new Cat(name, health, painLevel, miceCaught);
-                    double initialHealth = cat.getHealth();
-                    int initialPainLevel = cat.getPainLevel();
-                    cat.speak();
-                    String exitTime = addTime(time, cat.treat());
-                    message = name + "," + type + "," + miceCaught + "," + day + "," + time + "," + exitTime + ","
-                            + initialHealth + ","
-                            + initialPainLevel + "\n";
-                    output += message;
+                Pet petPatient = null;
+                switch (type) {
+                    case "Dog":
+                        petPatient = new Dog(name, health, painLevel, Double.parseDouble(stat));
+                        break;
+                    case "Cat":
+                        petPatient = new Cat(name, health, painLevel, Integer.parseInt(stat));
+                        break;
+                    default:
+                        break;
                 }
+
+                double initialHealth = petPatient.getHealth();
+                int initialPainLevel = petPatient.getPainLevel();
+                petPatient.speak();
+                String exitTime = addTime(time, petPatient.treat());
+                output += String.format("%s,%s,%s,Day %d,%s,%s,%s,%d\n", name, type, stat, day, time, exitTime,
+                        String.valueOf(initialHealth),
+                        initialPainLevel);
             }
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -113,7 +101,7 @@ public class Clinic {
                 fileScan.close();
             }
         }
-        return output;
+        return output.trim();
     }
 
     public String nextDay(String fileName) throws FileNotFoundException {
@@ -121,141 +109,64 @@ public class Clinic {
     }
 
     public boolean addToFile(String patientInfo) {
-        System.out.println("triggered");
-        System.out.println(patientInfo);
-        PrintWriter filePrint = null;
-        boolean result = false;
+        Scanner fileScan = null;
+        Scanner patientInfoScan = null;
         Scanner appointmentScan = null;
+        PrintWriter filePrint = null;
+        String output = "";
 
         try {
-            filePrint = new PrintWriter(new FileOutputStream(patientFile, true));
-            appointmentScan = new Scanner(patientInfo);
-            appointmentScan.useDelimiter(",");
-            String name = appointmentScan.next();
-            String type = appointmentScan.next();
-            double droolRate = 0.0;
-            int miceCaught = 0;
+            patientInfoScan = new Scanner(patientInfo);
+            patientInfoScan.useDelimiter(",");
+            String name = patientInfoScan.next();
 
-            if (type.equals("Dog")) {
-                droolRate = appointmentScan.nextDouble();
-            } else if (type.equals("Cat")) {
-                miceCaught = appointmentScan.nextInt();
-            } else {
-                throw new InvalidPetException();
+            boolean newPatient = true;
+            fileScan = new Scanner(patientFile);
+            while (fileScan.hasNextLine()) {
+                String line = fileScan.nextLine();
+                appointmentScan = new Scanner(line);
+                appointmentScan.useDelimiter(",");
+
+                String patientFileName = appointmentScan.next();
+                String patientFileType = appointmentScan.next();
+                String patientFileStat = appointmentScan.next();
+                String patientFileDay = appointmentScan.next();
+                String patientFileEntryTime = appointmentScan.next();
+                String patientFileExitTime = appointmentScan.next();
+                String patientFileHealth = appointmentScan.next();
+                String patientFilePainLevel = appointmentScan.next();
+
+                if (line.startsWith(name)) {
+                    newPatient = false;
+                    line += String.format(",%s,%s,%s,%s,%s", patientFileDay, patientFileEntryTime, patientFileExitTime,
+                            patientFileHealth, patientFilePainLevel);
+                }
+                output += (line + "\n");
             }
 
-            double health = appointmentScan.nextDouble();
-            int painLevel = appointmentScan.nextInt();
-            if (type.equals("Dog")) {
-                Dog currentDog = new Dog(name, health, painLevel, droolRate);
-                Scanner fileScan = null;
-                try {
-                    fileScan = new Scanner(patientFile);
-                    String line = null;
-                    if (fileScan.hasNextLine()) {
-                        while (fileScan.hasNextLine()) {
-                            line = fileScan.nextLine();
-                            appointmentScan = new Scanner(line);
-                            appointmentScan.useDelimiter(",");
-                            name = appointmentScan.next();
-                            type = appointmentScan.next();
-
-                            if (type.equals("Dog")) {
-                                droolRate = appointmentScan.nextDouble();
-                            } else if (type.equals("Cat")) {
-                                continue;
-                            } else {
-                                throw new InvalidPetException();
-                            }
-
-                            int currentday = appointmentScan.nextInt();
-                            String entryTime = appointmentScan.next();
-                            String exitTime = appointmentScan.next();
-
-                            health = appointmentScan.nextDouble();
-                            painLevel = appointmentScan.nextInt();
-                            Dog dog = new Dog(name, health, painLevel, droolRate);
-                            System.out.println("Dog");
-
-                            if (currentDog.equals(dog)) {
-                                filePrint.println("Day" + currentday + "," + entryTime + "," + exitTime + ","
-                                        + health + ","
-                                        + painLevel);
-                            } else {
-                                filePrint.println(patientInfo);
-                            }
-                        }
-                    } else {
-                        filePrint.println(patientInfo);
-                    }
-                } catch (FileNotFoundException e) {
-                    System.out.println(e.getMessage());
-                } finally {
-                    if (fileScan != null) {
-                        fileScan.close();
-                    }
-                }
-
-            } else if (type.equals("Cat")) {
-                Cat currentCat = new Cat(name, health, painLevel, miceCaught);
-                Scanner fileScan = null;
-                try {
-                    fileScan = new Scanner(patientFile);
-                    String line = null;
-                    if (fileScan.hasNextLine()) {
-                        while (fileScan.hasNextLine()) {
-                            line = fileScan.nextLine();
-                            appointmentScan = new Scanner(line);
-                            appointmentScan.useDelimiter(",");
-                            name = appointmentScan.next();
-                            type = appointmentScan.next();
-
-                            if (type.equals("Dog")) {
-                                continue;
-                            } else if (type.equals("Cat")) {
-                                miceCaught = appointmentScan.nextInt();
-                            } else {
-                                throw new InvalidPetException();
-                            }
-
-                            int currentday = appointmentScan.nextInt();
-                            String entryTime = appointmentScan.next();
-                            String exitTime = appointmentScan.next();
-
-                            health = appointmentScan.nextDouble();
-                            painLevel = appointmentScan.nextInt();
-                            Cat cat = new Cat(name, health, painLevel, miceCaught);
-                            if (currentCat.equals(cat)) {
-                                filePrint.println(
-                                        "Day" + currentday + "," + entryTime + "," + exitTime + "," + health + ","
-                                                + painLevel);
-                            } else {
-                                filePrint.println(patientInfo);
-                            }
-                        }
-                    } else {
-                        filePrint.println(patientInfo);
-                    }
-
-                } catch (FileNotFoundException e) {
-                    System.out.println(e.getMessage());
-                } finally {
-                    if (fileScan != null) {
-                        fileScan.close();
-                    }
-                }
+            if (newPatient) {
+                output += patientInfo;
             }
-            // filePrint.println(patientInfo);
-            result = true;
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
-            result = false;
+        } finally {
+            if (fileScan != null) {
+                fileScan.close();
+            }
+        }
+
+        try {
+            filePrint = new PrintWriter(patientFile);
+            filePrint.println(output);
+            return true;
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+            return false;
         } finally {
             if (filePrint != null) {
                 filePrint.close();
             }
         }
-        return result;
     }
 
     private String addTime(String timeIn, int treatmentTime) {
