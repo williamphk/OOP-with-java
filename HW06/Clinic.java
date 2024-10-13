@@ -119,6 +119,13 @@ public class Clinic {
             patientInfoScan = new Scanner(patientInfo);
             patientInfoScan.useDelimiter(",");
             String name = patientInfoScan.next();
+            String type = patientInfoScan.next();
+            String stat = patientInfoScan.next();
+            String day = patientInfoScan.next();
+            String entryTime = patientInfoScan.next();
+            String exitTime = patientInfoScan.next();
+            String health = patientInfoScan.next();
+            String painLevel = patientInfoScan.next();
 
             boolean newPatient = true;
             fileScan = new Scanner(patientFile);
@@ -126,20 +133,9 @@ public class Clinic {
                 String line = fileScan.nextLine();
                 appointmentScan = new Scanner(line);
                 appointmentScan.useDelimiter(",");
-
-                String patientFileName = appointmentScan.next();
-                String patientFileType = appointmentScan.next();
-                String patientFileStat = appointmentScan.next();
-                String patientFileDay = appointmentScan.next();
-                String patientFileEntryTime = appointmentScan.next();
-                String patientFileExitTime = appointmentScan.next();
-                String patientFileHealth = appointmentScan.next();
-                String patientFilePainLevel = appointmentScan.next();
-
                 if (line.startsWith(name)) {
                     newPatient = false;
-                    line += String.format(",%s,%s,%s,%s,%s", patientFileDay, patientFileEntryTime, patientFileExitTime,
-                            patientFileHealth, patientFilePainLevel);
+                    line += String.format(",%s,%s,%s,%s,%s", day, entryTime, exitTime, health, painLevel);
                 }
                 output += (line + "\n");
             }
